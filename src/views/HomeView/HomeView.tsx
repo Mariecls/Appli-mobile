@@ -5,9 +5,12 @@
  * @format
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Alert,
+  Button,
+  FlatList,
     Image,
   SafeAreaView,
   ScrollView,
@@ -18,13 +21,10 @@ import {
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+ 
+import { Pokemon } from '../../models/Pokemon';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { listPoke } from '../../data/Pokemon.List';
 
 
 
@@ -36,23 +36,50 @@ function HomeView(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const [counterPokedex, setCounterPokedex] = useState(0);
 
+  const onNext = () => {
+    if (counterPokedex === listPoke.length - 1) {
+      setCounterPokedex(0);
+    } else {
+      setCounterPokedex(counterPokedex + 1);
+    }
+  };
+  
+  const onPrevious = () => {
+    if (counterPokedex === 0) {
+      setCounterPokedex(listPoke.length - 1);
+    } else {
+      setCounterPokedex(counterPokedex - 1);
+    }
+  };
   return (
     <View>
-        <PokemonInfo name={'Pickachu'} level={17} isMale={true} src={require('../../assets/images/25.png')}/>
-        <PokemonInfo name={'dracaufeu'} level={78} isMale={false} src={require('../../assets/images/6.png')}/>
+      <Text>
+        The value of counter is : {counterPokedex}
+      </Text>
+      <Button
+        title="Next"
+        onPress={() => onNext()}
+      />
+      <Button
+        title="Previous"
+        onPress={() => onPrevious()}
+      />
+      <PokemonInfo
+        id={listPoke[counterPokedex].id}
+        name={listPoke[counterPokedex].name}
+        level={listPoke[counterPokedex].level}
+        isMale={listPoke[counterPokedex].isMale}
+        src={listPoke[counterPokedex].src}
+      />
     </View>
-    
   );
-}
+  
+  }
 
-type PokemonInfoType ={
-    name :string;
-    level : number;
-    isMale : boolean;
-    src : any;
-}
-const PokemonInfo = ({name,level,isMale,src}:PokemonInfoType) => {
+
+const PokemonInfo = ({name,level,isMale,src}:Pokemon) => {
     return(
         <View>
 
@@ -66,6 +93,8 @@ const PokemonInfo = ({name,level,isMale,src}:PokemonInfoType) => {
         </View>
     )
 }
+
+
 const styles = StyleSheet.create({
     ImagePokemon: {
       width: 200,
@@ -73,3 +102,7 @@ const styles = StyleSheet.create({
     },
     })
 export default HomeView;
+function setCounterPokedex(arg0: number) {
+  throw new Error('Function not implemented.');
+}
+
