@@ -65,6 +65,10 @@ function HomeView(): JSX.Element {
       <Button
         title="Previous"
         onPress={() => onPrevious()}
+      
+      
+      
+      
       />
       <PokemonInfo
         id={listPoke[counterPokedex].id}
