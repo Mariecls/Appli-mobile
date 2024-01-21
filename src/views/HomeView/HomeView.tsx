@@ -54,7 +54,8 @@ function HomeView(): JSX.Element {
     } else {
       setCounterPokedex(counterPokedex - 1);
     }
-  }; return (
+  }
+  return (
     <View  style = {styles.main_container}>
       <View style = {styles.title_container} >
      <Text style={styles.text_title}>Pokédex Application</Text>
