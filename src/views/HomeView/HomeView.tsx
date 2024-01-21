@@ -5,29 +5,20 @@
  * @format
  */
 
-import React, { useState } from 'react';
-import type {PropsWithChildren} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Alert,
   Button,
-  FlatList,
-    Image,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
+  Image,
   StyleSheet,
   Text,
-  useColorScheme,
+  TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 
- 
 import { Pokemon } from '../../models/Pokemon';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { listPoke } from '../../data/Pokemon.List';
-
-
-
+import { listPokeOriginal } from '../../data/Pokemon.List';
 
 function HomeView(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -37,7 +28,18 @@ function HomeView(): JSX.Element {
   };
 
   const [counterPokedex, setCounterPokedex] = useState(0);
+  const [listPoke, setListPoke] = useState([...listPokeOriginal]);
 
+  const getNamePokemon = (namePokemon: string) => {
+    console.log('View details for', namePokemon);
+    console.log('My neighbour is', listPoke[counterPokedex + 1]?.name || 'No neighbour');
+  };
+
+  const modifyLevel = () => {
+    let newArr = [...listPoke]; // copying the old datas array
+    newArr[counterPokedex].level = listPoke[counterPokedex].level + 5;
+    setListPoke(newArr);
+  }
   const onNext = () => {
     if (counterPokedex === listPoke.length - 1) {
       setCounterPokedex(0);
@@ -45,68 +47,50 @@ function HomeView(): JSX.Element {
       setCounterPokedex(counterPokedex + 1);
     }
   };
-  
+
   const onPrevious = () => {
     if (counterPokedex === 0) {
       setCounterPokedex(listPoke.length - 1);
     } else {
       setCounterPokedex(counterPokedex - 1);
     }
-  };
-  return (
+  }; return (
     <View>
-      <Text>
-        The value of counter is : {counterPokedex}
-      </Text>
-      <Button
-        title="Next"
-        onPress={() => onNext()}
-      />
-      <Button
-        title="Previous"
-        onPress={() => onPrevious()}
-      
-      
-      
-      
-      />
+      <Text>The value of counter is: {counterPokedex}</Text>
+      <Button title="Next" onPress={() => onNext()} />
+      <Button title="Previous" onPress={onPrevious} />
       <PokemonInfo
-        id={listPoke[counterPokedex].id}
-        name={listPoke[counterPokedex].name}
-        level={listPoke[counterPokedex].level}
-        isMale={listPoke[counterPokedex].isMale}
-        src={listPoke[counterPokedex].src}
+        id={listPoke[counterPokedex]?.id}
+        name={listPoke[counterPokedex]?.name}
+        level={listPoke[counterPokedex]?.level}
+        isMale={listPoke[counterPokedex]?.isMale}
+        src={listPoke[counterPokedex]?.src}
+        OnClickPokemon={modifyLevel}
       />
     </View>
   );
-  
-  }
+};
 
+const PokemonInfo = ({ name, level, isMale, src, OnClickPokemon }: Pokemon) => {
+  return (
+    <View>
+      <Text>This is a Pokemon</Text>
+      <Text>His name is {name}, his level is {level}.</Text>
+      {isMale ? <Text>This is a male</Text> : <Text>This is a female</Text>}
+      <TouchableOpacity onPress={() => OnClickPokemon?.()}>
+        <Image source={src} style={styles.imagePokemon} />
+      </TouchableOpacity>
+    </View>
+  );
+};
 
-const PokemonInfo = ({name,level,isMale,src}:Pokemon) => {
-    return(
-        <View>
-
-            <Text>This is a pokemon</Text>
-            <Text>his name is {name}</Text>
-            <Text>his level is {level}</Text>
-            {isMale ? 
-            <Text>his sex is a male</Text>
-            : <Text>his sex is a female</Text>}
-            <Image  source={src} style={styles.ImagePokemon}/>
-        </View>
-    )
-}
 
 
 const styles = StyleSheet.create({
-    ImagePokemon: {
-      width: 200,
-      height:200,
-    },
-    })
-export default HomeView;
-function setCounterPokedex(arg0: number) {
-  throw new Error('Function not implemented.');
-}
+  imagePokemon: {
+    width: 200,
+    height: 200,
+  },
+});
 
+export default HomeView;
