@@ -65,23 +65,33 @@ const HomeView = () => {
     const url = 'https://pokeapi.co/api/v2/pokemon?limit=151';
     fetch(url)
       .then(response => response.json())
-      .then(json => {
+      .then(async (json) => {
         console.log(json);
   
-        const newArray = json.results.map((pokemonData: any, index: number) => {
+        const newArray = await Promise.all(json.results.map(async (pokemonData: any, index: number) => {
           let indexPokedex = index + 1;
+          let pokemonDetailsResponse = await fetch(pokemonData.url);
+          let pokemonDetails = await pokemonDetailsResponse.json();
+          let isMale = true; // Default to true if information about gender is not available
+  
+          // Check if gender information is available
+          if (pokemonDetails.gender_rate !== -1) {
+            isMale = Math.random() > 0.5; // Randomly set the gender based on the gender rate
+          }
+  
           let pokemon = {
             id: indexPokedex,
             level: getRandomInt(40, 80),
-            isMale: true,
+            isMale: isMale,
             src: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${indexPokedex}.png`,
             ...pokemonData,
           };
   
           console.log('URL de l\'image pour', pokemon.name, ':', pokemon.src);
+          console.log('Est un mâle ?', pokemon.isMale);
   
           return pokemon;
-        });
+        }));
   
         setListPoke(shuffle(newArray));
         setIsDataReceived(true);
@@ -91,7 +101,7 @@ const HomeView = () => {
       });
   };
   
-  
+
 
   useEffect(() => {
       fetchPokemon();
@@ -127,6 +137,7 @@ const HomeView = () => {
     </View>
   );
 };
+
 
 const PokemonInfo = ({ name, level, isMale, src, onClickPokemon }: Pokemon) => {
   return (
