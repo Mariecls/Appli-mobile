@@ -74,7 +74,7 @@ function Section({children, title}: SectionProps): JSX.Element {
     <>
  <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeView} options={{ title: 'Home' }} />
+        <Stack.Screen name="Home" component={HomeView} options={{ title: '' }} />
         <Stack.Screen name="Details" component={PokemonDetailsView} options={{ title: 'Characteristics of the Pokemon' }} />
       </Stack.Navigator>
     </NavigationContainer>
