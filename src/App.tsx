@@ -28,10 +28,40 @@ import HomeView from './views/HomeView/HomeView';
 import TestView from './views/TestView/TestView';
 import { NavigationContainer } from '@react-navigation/native';
 import PokemonDetailsView from './views/PokemonDetailsView/PokemonDetailsView';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import MyPokemonView from './views/MyPokemonView/MyPokemonView';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
+
+
+
 
 const Stack = createNativeStackNavigator();
 
+const HomeStack = createNativeStackNavigator();
+
+function HomeStackScreen() {
+  return (
+    <HomeStack.Navigator>
+      <HomeStack.Screen name="Home" component={HomeView} options={{ title: '' }} />
+      <HomeStack.Screen name="Details" component={PokemonDetailsView} options={{ title: 'Characteristics of the Pokemon' }} />
+    </HomeStack.Navigator>
+  );
+}
+
+const MyPokemonStack = createNativeStackNavigator();
+
+function MyPokemonStackScreen() {
+  return (
+    <MyPokemonStack.Navigator>
+      <MyPokemonStack.Screen name="MyPokemon" component={MyPokemonView}  options={{ title: 'My Pokemon Team' }} />
+    </MyPokemonStack.Navigator>
+  );
+}
+
+const Tab = createBottomTabNavigator();
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -70,17 +100,41 @@ function Section({children, title}: SectionProps): JSX.Element {
       backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
     };
 
-  return (
-    <>
- <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeView} options={{ title: '' }} />
-        <Stack.Screen name="Details" component={PokemonDetailsView} options={{ title: 'Characteristics of the Pokemon' }} />
-      </Stack.Navigator>
-    </NavigationContainer>
-    </>
-  );
-};
+    return (
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName;
+  
+              if (route.name === 'Home') {
+                return <FontAwesomeIcon name="home" size={size} color={color} />;
+              } else if (route.name === 'MyPokemon') {
+                return <MaterialCommunityIcons name="pokeball" size={size} color={color} />;
+              }
+            },
+            tabBarActiveTintColor: 'tomato',
+            tabBarInactiveTintColor: 'gray',
+          })}
+        >
+          <Tab.Screen
+            name="Home"
+            component={HomeStackScreen} 
+            options={{
+              title: 'Home',
+            }}
+          />
+          <Tab.Screen
+            name="MyPokemon"
+            component={MyPokemonStackScreen} 
+            options={{
+              title: 'My Pokemon',
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
+    );
+  }
 
 const styles = StyleSheet.create({
   scrollView: {
