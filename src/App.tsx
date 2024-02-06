@@ -57,6 +57,7 @@ function MyPokemonStackScreen() {
   return (
     <MyPokemonStack.Navigator>
       <MyPokemonStack.Screen name="MyPokemon" component={MyPokemonView}  options={{ title: 'My Pokemon Team' }} />
+      <MyPokemonStack.Screen name="Details" component={PokemonDetailsView} options={{ title: 'Characteristics of the Pokemon' }} />
     </MyPokemonStack.Navigator>
   );
 }
