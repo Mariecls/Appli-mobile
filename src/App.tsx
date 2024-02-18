@@ -19,13 +19,8 @@ import {
 
 import {
   Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 import HomeView from './views/HomeView/HomeView';
-import TestView from './views/TestView/TestView';
 import { NavigationContainer } from '@react-navigation/native';
 import PokemonDetailsView from './views/PokemonDetailsView/PokemonDetailsView';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -33,7 +28,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MyPokemonView from './views/MyPokemonView/MyPokemonView';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
+import { Provider } from 'react-redux';
+import Store from './store/configureStore';
 
 
 
@@ -103,7 +99,8 @@ function Section({children, title}: SectionProps): JSX.Element {
 
     return (
       <NavigationContainer>
-        <Tab.Navigator
+        <Provider store={Store}>
+            <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, color, size }) => {
               let iconName;
@@ -132,8 +129,9 @@ function Section({children, title}: SectionProps): JSX.Element {
               title: 'My Pokemon',
             }}
           />
-        </Tab.Navigator>
-      </NavigationContainer>
+       </Tab.Navigator>
+    </Provider>
+  </NavigationContainer>
     );
   }
 
