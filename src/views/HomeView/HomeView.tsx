@@ -69,7 +69,8 @@ const HomeView = (props :any) => {
     props.navigation.navigate('Details', {
       id: idPokemon,
       name: namePokemon,
-      src: srcPokemon
+      src: srcPokemon,
+      isReleasePossible : false 
     });
   }
 
@@ -181,6 +182,7 @@ console.log(isDataReceived, "you hou rtgrethe")
           <Image source={require('../../assets/images/right-arrow.png')} style={styles.iconButton} />
         </TouchableOpacity>
       </View>
+      <Text>Length: {arrayPokemonCaptured.length}</Text>
     </View>
   ); 
 };

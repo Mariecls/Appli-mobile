@@ -1,27 +1,33 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
-import { listPokeOriginal } from '../../data/Pokemon.List';
+import { useSelector } from 'react-redux'; // Importer useSelector
+import { selectPokemonList } from '../../store/reducers/PokemonListSlice'; 
 
 const MyPokemonView = ({ navigation }: any) => {
+  // Sélectionner l'état Redux
+  const arrayPokemonCaptured = useSelector(selectPokemonList);
 
   const onViewPokemonDetails = (idPokemon: number, namePokemon: string, srcPokemon: string) => {
     navigation.navigate('Details', {
       id: idPokemon,
       name: namePokemon,
-      src: srcPokemon
+      src: srcPokemon,
+      isReleasePossible: true 
     });
   };
+  
 
   return (
     <View> 
       <Text style={styles.listTitle}>This is my list of Pokemon</Text>
       <FlatList
-        data={listPokeOriginal}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => (
-          <PokemonItem pokemon={item} onViewPokemonDetails={onViewPokemonDetails} />
-        )}
-      />
+  data={arrayPokemonCaptured} // Utiliser l'état Redux
+  keyExtractor={item => item.id.toString()}
+  renderItem={({ item }) => (
+    <PokemonItem pokemon={item} onViewPokemonDetails={onViewPokemonDetails} />
+  )}
+/>
+
     </View>
   );
 };
