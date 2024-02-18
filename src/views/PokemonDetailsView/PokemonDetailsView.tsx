@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Button } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux'; 
+import { removePokemonfromList } from '../../store/reducers/PokemonListSlice'; 
 
 const PokemonDetailsView = ({ route }) => {
-  const { id, name, src } = route.params;
+  const { id, name, src, isReleasePossible } = route.params;
   const [height, setHeight] = useState(null);
   const [weight, setWeight] = useState(null);
   const [types, setTypes] = useState([]);
 
+  const dispatch = useDispatch(); 
+
+  const releasePokemon = (idPokemon: number) => {
+    const action = { type: 'REMOVE_POKEMON_IN_LIST', value: idPokemon};
+    dispatch(removePokemonfromList(idPokemon));}
+
+
   useEffect(() => {
     fetchPokemonDetails();
   }, [id]);
+
+
 
   const fetchPokemonDetails = async () => {
     try {
@@ -24,6 +35,8 @@ const PokemonDetailsView = ({ route }) => {
     }
   };
 
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Pokemon Details</Text>
@@ -35,6 +48,9 @@ const PokemonDetailsView = ({ route }) => {
       {types.length > 0 && (
         <Text>Types: {types.join(', ')}</Text>
       )}
+ {isReleasePossible && <Button title="Release the Pokemon" onPress={() => releasePokemon(id)} />}
+
+
     </View>
   );
 };

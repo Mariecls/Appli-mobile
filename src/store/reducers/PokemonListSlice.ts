@@ -51,31 +51,35 @@ import { RootState } from "../configureStore";
 // Define a type for the slice state
 export interface PokemonListState {
   arrayPokemonCaptured: Pokemon[]
+  isReleasePossible: boolean;
 }
 
 // Define the initial state using that type
 const initialState: PokemonListState = {
-  arrayPokemonCaptured: []
+  arrayPokemonCaptured: [],
+  isReleasePossible: false,
 }
 
 export const pokemonListSlice = createSlice({
   name: 'pokemonList',
-  // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
     addPokemonToList: (state, action: PayloadAction<Pokemon>) => {
-      state.arrayPokemonCaptured.push(action.payload)
+      state.arrayPokemonCaptured.push(action.payload);
     },
     removePokemonfromList: (state, action: PayloadAction<Pokemon["id"]>) => {
-      state.arrayPokemonCaptured = state.arrayPokemonCaptured.filter((pokemon: Pokemon) => pokemon.id !== action.payload)
+      state.arrayPokemonCaptured = state.arrayPokemonCaptured.filter((pokemon: Pokemon) => pokemon.id !== action.payload);
+    },
+    setReleasePossible: (state, action: PayloadAction<boolean>) => {
+      state.isReleasePossible = action.payload;
     },
   }
-})
+});
 
-export const { addPokemonToList, removePokemonfromList } = pokemonListSlice.actions
+export const { addPokemonToList, removePokemonfromList, setReleasePossible } = pokemonListSlice.actions;
 export const selectPokemonList = (state: RootState) => state.pokemonList.arrayPokemonCaptured;
+export default pokemonListSlice.reducer;
 
-export default pokemonListSlice.reducer
 
 
 // export default pokemonReducer;
