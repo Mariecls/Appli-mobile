@@ -4,5 +4,5 @@ export type Pokemon = {
     level: number;
     isMale: boolean;
     src: any;
-    OnClickPokemon: any;
+    onClickPokemon: any;
 }

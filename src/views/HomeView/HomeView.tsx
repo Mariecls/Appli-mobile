@@ -22,6 +22,13 @@ import { getRandomInt, shuffle } from '../../utils/utils';
 import * as commonStyle from '../../utils/commonStyle';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+//@ts-ignore
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import configureStore from '../../store/configureStore';
+import { addPokemonToList, selectPokemonList } from '../../store/reducers/PokemonListSlice';
+
 
 const HomeView = (props :any) => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -31,9 +38,25 @@ const HomeView = (props :any) => {
   };
 
   const [counterPokedex, setCounterPokedex] = useState(0);
-  const [listPoke, setListPoke] = useState<Pokemon[]>(undefined);
   const [isDataReceived, setIsDataReceived] = useState(false);
-  
+    // const [arrayPokemonCaptured, setArrayPokemonCaptured] = useState<Pokemon[]>([]);
+    const [listPoke, setListPoke] = useState<Pokemon[]>([]);
+    const arrayPokemonCaptured = useSelector(selectPokemonList)
+  const dispatch = useDispatch()
+
+    const onCapturePokemon = () => {
+      const currentPokemon = listPoke[counterPokedex];
+      // setArrayPokemonCaptured(prevArray => [...prevArray, currentPokemon]);
+      // console.log('Pokemon Captured: ', arrayPokemonCaptured);
+      // const action = { type: 'ADD_TO_LIST_POKEMON', value: currentPokemon};
+      // props.dispatch(action);
+      dispatch(addPokemonToList(currentPokemon))
+    }
+    
+
+    useEffect(() => {
+      console.log('Pokemon Captured', arrayPokemonCaptured);
+    }, [arrayPokemonCaptured]);
   console.log('Props: ', props);
 
   const getNamePokemon = (namePokemon: string) => {
@@ -50,13 +73,13 @@ const HomeView = (props :any) => {
     });
   }
 
-  const modifyLevel = () => {
-    if (listPoke) {
-      let newArr = [...listPoke];
-      newArr[counterPokedex].level = listPoke[counterPokedex].level + 5;
-      setListPoke(newArr);
-    }
-  };
+  // const modifyLevel = () => {
+  //   if (listPoke) {
+  //     let newArr = [...listPoke];
+  //     newArr[counterPokedex].level = listPoke[counterPokedex].level + 5;
+  //     setListPoke(newArr);
+  //   }
+  // };
 
   const onNext = () => {
     if (listPoke && counterPokedex === listPoke.length - 1) {
@@ -79,34 +102,42 @@ const HomeView = (props :any) => {
     fetch(url)
       .then(response => response.json())
       .then(async (json) => {
-        console.log(json);
-  
-        const newArray = await Promise.all(json.results.map(async (pokemonData: any, index: number) => {
-          let indexPokedex = index + 1;
-          let pokemonDetailsResponse = await fetch(pokemonData.url);
-          let pokemonDetails = await pokemonDetailsResponse.json();
-          let isMale = true; // Default to true if information about gender is not available
-  
-          // Check if gender information is available
-          if (pokemonDetails.gender_rate !== -1) {
-            isMale = Math.random() > 0.5; // Randomly set the gender based on the gender rate
+        let res = []
+        for (const [index, pokemonData] of json.results.entries()) {
+          try {
+
+            let indexPokedex = index + 1;
+            let pokemonDetailsResponse = await fetch(pokemonData.url);
+            let pokemonDetails = await pokemonDetailsResponse.json();
+            let isMale = true; // Default to true if information about gender is not available
+    
+            // Check if gender information is available
+            if (pokemonDetails.gender_rate !== -1) {
+              isMale = Math.random() > 0.5; // Randomly set the gender based on the gender rate
+            }
+    
+            let pokemon = {
+              id: indexPokedex,
+              level: getRandomInt(40, 80),
+              isMale: isMale,
+              src: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${indexPokedex}.png`,
+              ...pokemonData,
+            };
+    
+            console.log('URL de l\'image pour', pokemon.name, ':', pokemon.src);
+            console.log('Est un mâle ?', pokemon.isMale);
+            res.push(pokemon)
           }
-  
-          let pokemon = {
-            id: indexPokedex,
-            level: getRandomInt(40, 80),
-            isMale: isMale,
-            src: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${indexPokedex}.png`,
-            ...pokemonData,
-          };
-  
-          console.log('URL de l\'image pour', pokemon.name, ':', pokemon.src);
-          console.log('Est un mâle ?', pokemon.isMale);
-  
-          return pokemon;
-        }));
-  
-        setListPoke(shuffle(newArray));
+          catch {
+            console.log('Error: ', {index, pokemonData});
+
+          }
+        }
+        return res
+      })
+      .then((array: any[]) => {
+        console.log(array, "hello end" )
+        setListPoke(shuffle(array));
         setIsDataReceived(true);
       })
       .catch(error => {
@@ -115,7 +146,7 @@ const HomeView = (props :any) => {
   };
   
 
-
+console.log(isDataReceived, "you hou rtgrethe")
   useEffect(() => {
       fetchPokemon();
   }, [])
@@ -142,6 +173,9 @@ const HomeView = (props :any) => {
       <View style={styles.button_container}>
         <TouchableOpacity style={styles.buttonNextPrevious} onPress={() => onPrevious()}>
           <Image source={require('../../assets/images/left-arrow.png')} style={styles.iconButton} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonNextPrevious}   onPress={() => onCapturePokemon()}>
+        <Image source={require('../../assets/images/pokeball.png')} style={styles.iconButton} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.buttonNextPrevious} onPress={() => onNext()}>
           <Image source={require('../../assets/images/right-arrow.png')} style={styles.iconButton} />
@@ -219,5 +253,6 @@ const styles = StyleSheet.create({
     ...commonStyle.roundedButton,
   },
 });
+
 
 export default HomeView;
